@@ -40,16 +40,17 @@
         </section>
     </main>
 
-    <!-- LEDGER HISTORY VIEW -->
+    <!-- PICKS HISTORY VIEW -->
     <main id="view-history" style="display: none;">
         <header class="slate-header">
             <div class="title-cluster">
-                <span class="fire-badge">🏦 BANKROLL</span>
-                <h1>SINDICATO LEDGER</h1>
+                <span class="fire-badge">BANKROLL</span>
+                <h1>PICKS HISTORY</h1>
             </div>
-            <p>Immutable Historical Picks Tracking & Profit Calculation ($100 Flat)</p>
+            <p>Immutable Historical Picks Tracking &amp; Dynamic Kelly Sizing</p>
         </header>
 
+        <!-- TOTAL STATS ROW -->
         <section class="bankroll-dash">
             <div class="bankroll-card highlight">
                 <h3>Total Profit</h3>
@@ -65,8 +66,17 @@
             </div>
         </section>
 
+        <!-- PER-MARKET BREAKDOWN (auto-generated) -->
+        <section id="market-breakdown" class="bankroll-dash" style="flex-wrap:wrap;">
+            <!-- Populated dynamically by JS -->
+        </section>
+
         <section class="ledger-table-container">
-            <div class="ledger-controls">
+            <div class="ledger-controls" style="display:flex; gap:10px; justify-content:flex-end; align-items:center;">
+                <select id="ledger-market">
+                    <option value="ALL">All Markets</option>
+                    <!-- Populated dynamically -->
+                </select>
                 <select id="ledger-year">
                     <option value="2026">2026 Season</option>
                     <option value="2025">2025 Season</option>

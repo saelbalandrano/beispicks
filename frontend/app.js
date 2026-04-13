@@ -187,6 +187,7 @@ function setupTabs() {
     const viewToday = document.getElementById('view-today');
     const viewHistory = document.getElementById('view-history');
     const yearSelect = document.getElementById('ledger-year');
+    const marketSelect = document.getElementById('ledger-market');
 
     tabToday.addEventListener('click', () => {
         tabToday.classList.add('active');
@@ -200,15 +201,43 @@ function setupTabs() {
         tabToday.classList.remove('active');
         viewHistory.style.display = 'block';
         viewToday.style.display = 'none';
-        loadLedger(yearSelect.value);
+        loadLedger(yearSelect.value, marketSelect.value);
     });
 
-    yearSelect.addEventListener('change', (e) => {
-        loadLedger(e.target.value);
+    yearSelect.addEventListener('change', () => {
+        loadLedger(yearSelect.value, marketSelect.value);
+    });
+    marketSelect.addEventListener('change', () => {
+        loadLedger(yearSelect.value, marketSelect.value);
     });
 }
 
-async function loadLedger(year) {
+const marketLabels = {
+    'h2h': 'Moneyline',
+    'spreads': 'ATS',
+    'totals': 'Over/Under',
+    'h2h_1st_5_innings': 'F5 ML',
+    'spreads_1st_5_innings': 'F5 Spread',
+    'totals_1st_5_innings': 'F5 O/U'
+};
+
+function getMarketLabel(key) {
+    return marketLabels[key] || key;
+}
+
+function calcStats(rows) {
+    let w = 0, l = 0, p = 0, profit = 0;
+    rows.forEach(r => {
+        if (r.status === 'WON') w++;
+        else if (r.status === 'LOST') l++;
+        else if (r.status === 'PUSH') p++;
+        profit += parseFloat(r.profit_loss || 0);
+    });
+    const wr = (w + l) > 0 ? (w / (w + l) * 100).toFixed(1) : '0.0';
+    return { w, l, p, profit, wr };
+}
+
+async function loadLedger(year, marketFilter) {
     try {
         const response = await fetch('data/ledger.json');
         const data = await response.json();
@@ -218,45 +247,73 @@ async function loadLedger(year) {
         const yearData = data.filter(d => d.game_date.startsWith(year));
         yearData.sort((a, b) => new Date(b.game_date) - new Date(a.game_date));
 
-        let wins = 0, losses = 0, pushes = 0;
-        let totalProfit = 0.0;
+        // --- Auto-detect markets and populate filter ---
+        const marketsFound = [...new Set(yearData.map(r => r.market_type).filter(Boolean))];
+        const marketSelect = document.getElementById('ledger-market');
+        const currentVal = marketSelect.value;
+        // Keep ALL option, rebuild the rest
+        marketSelect.innerHTML = '<option value="ALL">All Markets</option>';
+        marketsFound.forEach(mk => {
+            const opt = document.createElement('option');
+            opt.value = mk;
+            opt.textContent = getMarketLabel(mk);
+            marketSelect.appendChild(opt);
+        });
+        marketSelect.value = currentVal; // preserve selection
 
-        yearData.forEach(row => {
-            if (row.status === 'WON') wins++;
-            else if (row.status === 'LOST') losses++;
-            else if (row.status === 'PUSH') pushes++;
+        // --- Filter by market if not ALL ---
+        const filtered = (!marketFilter || marketFilter === 'ALL')
+            ? yearData
+            : yearData.filter(r => r.market_type === marketFilter);
 
-            totalProfit += parseFloat(row.profit_loss || 0);
+        // --- Total stats (all markets) ---
+        const totals = calcStats(yearData);
+        document.getElementById('ledger-wlp').innerText = `${totals.w}-${totals.l}-${totals.p}`;
+        document.getElementById('ledger-winrate').innerText = `${totals.wr}%`;
+        const profitEl = document.getElementById('ledger-profit');
+        profitEl.innerText = `${totals.profit >= 0 ? '+' : ''}$${totals.profit.toFixed(2)}`;
+        profitEl.style.color = totals.profit >= 0 ? '#a0ff2e' : '#ff4757';
 
+        // --- Per-market breakdown cards ---
+        const breakdownEl = document.getElementById('market-breakdown');
+        breakdownEl.innerHTML = '';
+        marketsFound.forEach(mk => {
+            const mkRows = yearData.filter(r => r.market_type === mk);
+            const s = calcStats(mkRows);
+            const label = getMarketLabel(mk);
+            const profitColor = s.profit >= 0 ? '#a0ff2e' : '#ff4757';
+            const card = document.createElement('div');
+            card.className = 'bankroll-card';
+            card.style.cssText = 'flex:1; min-width:200px;';
+            card.innerHTML = `
+                <h3 style="color:${profitColor}; font-size:0.75rem;">${label}</h3>
+                <h2 style="font-size:1.5rem; color:${profitColor};">${s.profit >= 0 ? '+' : ''}$${s.profit.toFixed(2)}</h2>
+                <div style="margin-top:8px; font-size:0.8rem; color:#888;">
+                    ${s.w}-${s.l}-${s.p} &nbsp;|&nbsp; ${s.wr}%
+                </div>
+            `;
+            breakdownEl.appendChild(card);
+        });
+
+        // --- Render table rows ---
+        filtered.forEach(row => {
             let statusClass = '';
             if (row.status === 'WON') statusClass = 'status-won';
             if (row.status === 'LOST') statusClass = 'status-lost';
             if (row.status === 'PUSH') statusClass = 'status-push';
 
             const tr = document.createElement('tr');
-            
-            // Resolver nombre del matchup y pick
             const homeName = row.home_team_name || '?';
             const awayName = row.away_team_name || '?';
             const matchup = `${awayName} @ ${homeName}`;
             const pickName = row.pick_team === 'HOME' ? homeName : awayName;
-            
-            // Traducir market_type a nombres legibles
-            const marketLabels = {
-                'h2h': 'Moneyline',
-                'spreads': 'Spread',
-                'totals': 'Over/Under',
-                'h2h_1st_5_innings': 'F5 Moneyline',
-                'spreads_1st_5_innings': 'F5 Spread',
-                'totals_1st_5_innings': 'F5 Over/Under'
-            };
-            const marketLabel = marketLabels[row.market_type] || row.market_type;
-            
+            const mLabel = getMarketLabel(row.market_type);
+
             tr.innerHTML = `
                 <td>${row.game_date}</td>
                 <td style="font-size:0.85rem;">${matchup}</td>
                 <td style="font-weight:bold; color:#fff;">${pickName}</td>
-                <td><span style="background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px;">${marketLabel}</span></td>
+                <td><span style="background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px;">${mLabel}</span></td>
                 <td>${row.odds > 0 ? '+' : ''}${row.odds}</td>
                 <td style="color:#feca57; font-weight:600;">$${parseFloat(row.stake || 100).toFixed(0)}</td>
                 <td class="${statusClass}">${row.status}</td>
@@ -267,20 +324,13 @@ async function loadLedger(year) {
             tbody.appendChild(tr);
         });
 
-        if (yearData.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No official picks recorded for this period yet.</td></tr>';
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No picks recorded for this filter.</td></tr>';
         }
 
-        document.getElementById('ledger-wlp').innerText = `${wins}-${losses}-${pushes}`;
-        const winrate = (wins + losses) > 0 ? (wins / (wins + losses) * 100).toFixed(1) : 0.0;
-        document.getElementById('ledger-winrate').innerText = `${winrate}%`;
-        
-        const profitEl = document.getElementById('ledger-profit');
-        profitEl.innerText = `${totalProfit >= 0 ? '+' : ''}$${totalProfit.toFixed(2)}`;
-        profitEl.style.color = totalProfit >= 0 ? '#a0ff2e' : '#ff4757';
-
     } catch (error) {
-        console.log("No ledger data found yet or error loading: ", error);
-        document.getElementById('ledger-tbody').innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 2rem;">Awaiting daily sync. Missing ledger.json</td></tr>';
+        console.log("No ledger data found: ", error);
+        document.getElementById('ledger-tbody').innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 2rem;">Awaiting daily sync.</td></tr>';
     }
 }
+
