@@ -223,6 +223,7 @@ async function loadLedger(year) {
                 <td style="font-weight:bold; color:#fff;">${pickName}</td>
                 <td><span style="background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px;">${marketLabel}</span></td>
                 <td>${row.odds > 0 ? '+' : ''}${row.odds}</td>
+                <td style="color:#feca57; font-weight:600;">$${parseFloat(row.stake || 100).toFixed(0)}</td>
                 <td class="${statusClass}">${row.status}</td>
                 <td style="color:${parseFloat(row.profit_loss) > 0 ? '#a0ff2e' : (parseFloat(row.profit_loss) < 0 ? '#ff4757' : '#fff')}; font-weight:bold;">
                     ${parseFloat(row.profit_loss) > 0 ? '+' : ''}$${parseFloat(row.profit_loss).toFixed(2)}
@@ -232,7 +233,7 @@ async function loadLedger(year) {
         });
 
         if (yearData.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No official picks recorded for this period yet.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No official picks recorded for this period yet.</td></tr>';
         }
 
         document.getElementById('ledger-wlp').innerText = `${wins}-${losses}-${pushes}`;

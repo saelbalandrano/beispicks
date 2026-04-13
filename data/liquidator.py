@@ -1,7 +1,6 @@
 import os
 from dotenv import load_dotenv
 from supabase import create_client, Client
-import math
 
 class SindicatoLiquidator:
     def __init__(self):
@@ -10,16 +9,16 @@ class SindicatoLiquidator:
         self.key = os.getenv("SUPABASE_KEY")
         self.client: Client = create_client(self.url, self.key)
 
-    def calcular_payout(self, odds: int) -> float:
+    def calcular_payout(self, odds: int, stake: float) -> float:
         """
-        Calcula el profit para una apuesta Flat de $100 físicos.
-        Favoritos (-): Ganas (10000 / |odds|). Pierdes $100.
-        Underdogs (+): Ganas odds. Pierdes $100.
+        Calcula el profit para una apuesta con stake dinámico (Kelly).
+        Favoritos (-): Ganas stake * (100 / |odds|).
+        Underdogs (+): Ganas stake * (odds / 100).
         """
         if odds < 0:
-            return round(10000.0 / abs(odds), 2)
+            return round(stake * (100.0 / abs(odds)), 2)
         else:
-            return float(odds)
+            return round(stake * (odds / 100.0), 2)
 
     def liquidar_juegos_pendientes(self):
         print("\n -> [LIQUIDATOR] Iniciando auditoría de fondos y liquidación de pendientes...")
@@ -55,11 +54,13 @@ class SindicatoLiquidator:
                 # MLB API Status = 'Final' u otros marcadores
                 m_status = match.get('status', '').lower()
                 if 'final' not in m_status and 'completed' not in m_status:
-                    # El juego real todavía no acaba o está suspendido
                     continue
                     
                 home_score = match.get('home_score', 0)
                 away_score = match.get('away_score', 0)
+                
+                # Stake dinámico (Kelly) o fallback a $100 flat si no existe
+                stake = float(bet.get('stake', 100.0))
                 
                 # Lógica H2H
                 if bet['market_type'] == 'h2h':
@@ -73,10 +74,10 @@ class SindicatoLiquidator:
                         ganador = (home_won and picked_home) or (not home_won and not picked_home)
                         if ganador:
                             bet['status'] = 'WON'
-                            bet['profit_loss'] = self.calcular_payout(bet['odds'])
+                            bet['profit_loss'] = self.calcular_payout(bet['odds'], stake)
                         else:
                             bet['status'] = 'LOST'
-                            bet['profit_loss'] = -100.00
+                            bet['profit_loss'] = -stake
                             
                 elif bet['market_type'] == 'spreads' or bet['market_type'] == 'totals':
                     # Lógica de spreads/runlines se expandirá aquí cuando el modelo los apoye

@@ -35,6 +35,26 @@ def obtener_probabilidad_vegas(cuota):
     if pd.isna(cuota) or cuota == 0: return 50.0
     return (abs(cuota) / (abs(cuota) + 100)) * 100 if cuota < 0 else (100 / (cuota + 100)) * 100
 
+def calcular_kelly_stake(confianza_pct, cuota_americana, bankroll, fraction=0.25, cap=0.05):
+    """
+    Quarter-Kelly con techo del 5% del bankroll.
+    confianza_pct: probabilidad del modelo en % (ej: 62.5)
+    cuota_americana: odds americanas (ej: -150 o +130)
+    bankroll: capital actual
+    """
+    p = confianza_pct / 100.0
+    if cuota_americana < 0:
+        decimal = 1 + (100 / abs(cuota_americana))
+    else:
+        decimal = 1 + (cuota_americana / 100)
+    
+    kelly_full = (p * (decimal - 1) - (1 - p)) / (decimal - 1)
+    kelly_full = max(0, kelly_full)
+    kelly_adj = kelly_full * fraction
+    stake = round(bankroll * kelly_adj, 2)
+    stake = max(10, min(stake, bankroll * cap))
+    return stake
+
 def run_sindicato():
     print("\n" + "="*50)
     print(" INICIANDO OPERACIÓN SINDICATO (CONSENSO 5 CAPAS)")
@@ -271,10 +291,15 @@ def run_sindicato():
                 l15_autoriza = (len(hist_L15) < 5 or wr_L15 >= 0.350)
                 
                 if ytd_autoriza and l15_autoriza:
+                    # KELLY CRITERION: Quarter-Kelly con cap 5%
+                    BANKROLL = 5000.0  # Capital base de referencia
+                    kelly_stake = calcular_kelly_stake(confianza, cuota, BANKROLL)
+                    
                     partido_info["status"] = "APROBADO"
                     partido_info["pick"] = pick_xgb
+                    partido_info["kelly_stake"] = float(kelly_stake)
                     partido_info["motivo"] = "Consenso de 5 Capas"
-                    print(f"[APROBADO] DISPARAR: {pick_xgb} (ID: {tid_apuesta}) | Cuota: {cuota} | Edge: +{edge:.2f}% | Confianza: {confianza:.2f}%")
+                    print(f"[APROBADO] DISPARAR: {pick_xgb} (ID: {tid_apuesta}) | Cuota: {cuota} | Edge: +{edge:.2f}% | Confianza: {confianza:.2f}% | Kelly: ${kelly_stake:.2f}")
                 else:
                     motivo = "Racha YTD (-3)" if not ytd_autoriza else "WinRate L15 (<0.350)"
                     partido_info["motivo"] = f"Bloqueado por Escudo: {motivo}"
@@ -297,6 +322,7 @@ def run_sindicato():
                     "pick_team": partido_info["tentative_pick"],
                     "market_type": "h2h",
                     "odds": int(partido_info["odds"]),
+                    "stake": float(partido_info.get("kelly_stake", 100.0)),
                     "status": "PENDING",
                     "profit_loss": 0.00
                 })
