@@ -2,15 +2,19 @@ name: Sindicato MLB - Orquestador Diario
 
 on:
   schedule:
-    # 14:00 UTC equivale a las 10:00 AM EDT (Eastern Daylight Time - Hora de New York)
-    # A esta hora no hay juegos en vivo, garantizando momios 100% pre-match (Vegas Original).
-    - cron: '0 14 * * *'
+    # 12:00 UTC = 7:00 AM CDT (Hora del Centro / CDMX en verano)
+    # Los juegos de MLB no empiezan antes de las 11:00 AM CT.
+    # A esta hora garantizamos momios 100% pre-match (Vegas Original).
+    - cron: '0 12 * * *'
   workflow_dispatch: # Permite correrlo manualmente desde la página de GitHub con un botón
 
 jobs:
-  run-quant-model:
+  # ═══════════════════════════════════════════════════════
+  #  JOB 1: CARGA DE DATOS (7:00 AM CT)
+  #  Sincroniza resultados de ayer + Captura momios de hoy
+  # ═══════════════════════════════════════════════════════
+  data-sync:
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout del Repositorio
         uses: actions/checkout@v4
@@ -37,7 +41,32 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: python -c "from data.updater import DailyUpdater; DailyUpdater().run_daily_update()"
 
-      - name: "Paso 3: Ejecutar Cerebro Quant (XGBoost + Monte Carlo + Ledger)"
+  # ═══════════════════════════════════════════════════════
+  #  JOB 2: PREDICCIONES (~7:10 AM CT)
+  #  Espera a que data-sync termine, luego lanza el cerebro
+  # ═══════════════════════════════════════════════════════
+  predictions:
+    runs-on: ubuntu-latest
+    needs: data-sync  # No arranca hasta que el Job 1 termine exitosamente
+    steps:
+      - name: Checkout del Repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Entorno Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Instalar Dependencias
+        run: pip install -r requirements.txt
+
+      - name: "Pausa de seguridad (Supabase digest)"
+        run: |
+          echo "Esperando 2 minutos para que Supabase procese los índices..."
+          sleep 120
+
+      - name: "Paso 3: Ejecutar Cerebro Quant (XGBoost + Monte Carlo + Kelly + Ledger)"
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
