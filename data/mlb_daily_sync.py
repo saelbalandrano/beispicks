@@ -24,7 +24,7 @@ fecha_str = ayer.strftime('%m/%d/%Y')
 fecha_sql = ayer.strftime('%Y-%m-%d')
 
 print(f"\n{'='*60}")
-print(f" 🚜 SINDICATO MLB: SINCRONIZACIÓN DIARIA TOTAL ({fecha_str})")
+print(f" [SYNC] SINDICATO MLB: SINCRONIZACION DIARIA TOTAL ({fecha_str})")
 print(f"{'='*60}")
 
 # Diccionarios de almacenamiento en memoria
@@ -43,8 +43,8 @@ schedule = statsapi.schedule(date=fecha_str)
 juegos_validos = [g['game_id'] for g in schedule if g['game_type'] == 'R' and g['status'] in ['Final', 'Completed Early']]
 
 if not juegos_validos:
-    print(" ⚠️ No se encontraron juegos de temporada regular finalizados para ayer. Abortando sincronización.")
-    sys.exit(0)  # Exit 0 = éxito, para que GitHub Actions no bloquee el pipeline
+    print(" [SKIP] No se encontraron juegos de temporada regular finalizados para ayer. Abortando sincronizacion.")
+    sys.exit(0)  # Exit 0 = exito, para que GitHub Actions no bloquee el pipeline
 
 print(f" -> Encontrados {len(juegos_validos)} juegos. Extrayendo Boxscores, Clima, Umpires y PBP...")
 
@@ -197,10 +197,10 @@ for i, pk in enumerate(juegos_validos):
 
         time.sleep(0.3)
     except Exception as e:
-        print(f"    ⚠️ Error procesando PK {pk}: {e}")
+        print(f"    [WARN] Error procesando PK {pk}: {e}")
 
 # --- INYECCIÓN A SUPABASE ---
-print("\n 🚀 INYECTANDO A SUPABASE...")
+print("\n [PUSH] INYECTANDO A SUPABASE...")
 def upsert_lote(tabla, datos_dict, on_conflict=None):
     lista = list(datos_dict.values())
     if not lista: return
@@ -217,15 +217,15 @@ def upsert_lote(tabla, datos_dict, on_conflict=None):
 upsert_lote('mlb_games_history', db_games, 'game_pk')
 upsert_lote('game_weather', db_weather, 'game_pk')
 upsert_lote('game_umpires', db_umpires, 'game_pk')
-upsert_lote('game_innings', db_innings)
-upsert_lote('game_lineups', db_lineups)
-upsert_lote('pitcher_game_logs', db_pitchers)
-upsert_lote('batter_game_logs', db_batters)
-upsert_lote('game_plate_appearances', db_pbp)
-upsert_lote('statcast_batted_balls', db_statcast)
+upsert_lote('game_innings', db_innings, 'game_pk,inning_number')
+upsert_lote('game_lineups', db_lineups, 'game_pk,batter_id')
+upsert_lote('pitcher_game_logs', db_pitchers, 'game_pk,pitcher_id')
+upsert_lote('batter_game_logs', db_batters, 'game_pk,batter_id')
+upsert_lote('game_plate_appearances', db_pbp, 'game_pk,at_bat_index')
+upsert_lote('statcast_batted_balls', db_statcast, 'game_pk,batter_id,inning')
 
 # --- CAPA INTELECTUAL: BULLPEN & VIAJES ---
-print("\n ⚙️ CALCULANDO INTELIGENCIA (BULLPEN & VIAJES)...")
+print("\n [CALC] CALCULANDO INTELIGENCIA (BULLPEN & VIAJES)...")
 
 # Bullpen
 res_p = supabase.table('pitcher_game_logs').select('*').eq('game_date', fecha_sql).eq('is_starter', False).execute()
@@ -270,8 +270,8 @@ try:
         if travel_lote:
             supabase.table('team_travel_logs').upsert(travel_lote).execute()
     else:
-        print(" ⚠️ No se encontraron juegos recientes para calcular viajes. Saltando.")
+        print(" [SKIP] No se encontraron juegos recientes para calcular viajes. Saltando.")
 except Exception as e:
-    print(f" ⚠️ Error calculando viajes: {e}. Continuando sin bloquear.")
+    print(f" [WARN] Error calculando viajes: {e}. Continuando sin bloquear.")
 
-print("\n 🏁 ACTUALIZACIÓN DIARIA COMPLETADA. SINDICATO AL 100%.")
+print("\n [DONE] ACTUALIZACION DIARIA COMPLETADA. SINDICATO AL 100%.")
