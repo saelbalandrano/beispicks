@@ -137,6 +137,19 @@ function createCard(pick, isApproved) {
         </div>
     `;
 
+    const probHtml = `
+        <div class="prob-container">
+            <div class="prob-label">
+                <span style="color:#ffffff">${aProb}%</span>
+                <span style="color:#ff3333">${hProb}%</span>
+            </div>
+            <div class="bar-bg">
+                <div class="bar-fill" style="width: ${aProb}%; background: #ffffff; box-shadow: 0 0 10px rgba(255,255,255,0.8);"></div>
+                <div class="bar-fill" style="width: ${hProb}%; background: #ff3333; box-shadow: 0 0 10px rgba(255,51,51,0.8);"></div>
+            </div>
+        </div>
+    `;
+
     card.innerHTML = `
         <div class="match-header">
             <span>${new Date(pick.game_date + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'})}</span>
