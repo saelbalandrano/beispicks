@@ -43,18 +43,21 @@ function renderDashboard(picks) {
     approvedGrid.innerHTML = '';
     ignoredGrid.innerHTML = '';
 
-    const approvedPicks = picks.filter(p => p.status === 'APROBADO');
-    const ignoredPicks = picks.filter(p => p.status !== 'APROBADO');
+    const approvedPicks = picks.filter(p => p.status === 'APROBADO' || p.ats_status === 'APROBADO');
+    const ignoredPicks = picks.filter(p => p.status !== 'APROBADO' && p.ats_status !== 'APROBADO');
 
     if(approvedPicks.length === 0) {
         approvedGrid.innerHTML = `
             <div style="grid-column: 1/-1; padding: 3rem; text-align: center; background: rgba(255,255,255,0.02); border-radius: 15px; border: 1px dashed rgba(255,255,255,0.1)">
-                <span style="font-size:2rem; opacity:0.5">🛡️</span>
+                <span style="font-size:2rem; opacity:0.5">---</span>
                 <h3 style="margin-top:1rem; color:var(--text-secondary)">No hay picks aprobados hoy.</h3>
-                <p style="color:#666; font-size:0.9rem">El algoritmo no encontró bordes matemáticos seguros.</p>
+                <p style="color:#666; font-size:0.9rem">El algoritmo no encontro bordes matematicos seguros.</p>
             </div>`;
     } else {
-        approvedPicks.forEach(p => approvedGrid.appendChild(createCard(p, true)));
+        approvedPicks.forEach(p => {
+            const isAnyApproved = (p.status === 'APROBADO' || p.ats_status === 'APROBADO');
+            approvedGrid.appendChild(createCard(p, isAnyApproved));
+        });
     }
 
     ignoredPicks.forEach(p => ignoredGrid.appendChild(createCard(p, false)));
@@ -83,42 +86,61 @@ function createCard(pick, isApproved) {
 
     const hasTentative = pick.tentative_pick && pick.tentative_pick !== null;
 
-    const actionHtml = isApproved ? `
-        <div class="action-area" style="text-align: center; border-radius: 8px; background: rgba(160,255,46,0.1); border: 1px solid #a0ff2e; padding: 12px; margin-top: 15px;">
-            <div style="font-size: 0.70rem; color: #a0ff2e; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">🏆 Sindicato Pick Oficial</div>
-            <div style="color: #ffffff; font-weight: 900; font-size: 1.25rem; margin-top: 6px;">${pick.tentative_pick === 'HOME' ? (pick.home_team_name || 'HOME') : (pick.away_team_name || 'AWAY')} <span>${getDisplayOdds(pick.odds)}</span></div>
-            <div style="margin-top: 8px; font-size:0.75rem; color:rgba(255,255,255,0.7)">Confianza Vegas: ${pick.confianza}%</div>
-        </div>
-    ` : (hasTentative ? `
-        <div class="action-area" style="text-align: center; border-radius: 8px; background: rgba(40,40,40,0.8); border: 1px dashed rgba(255,255,255,0.2); padding: 12px; margin-top: 15px;">
-            <div style="font-size: 0.70rem; color: #aaaaaa; text-transform: uppercase;">Pick Sugerido (No Oficial)</div>
-            <div style="color: #ffffff; font-weight: bold; font-size: 1rem; margin-top: 6px;">
-                ${pick.tentative_pick === 'HOME' ? (pick.home_team_name || 'HOME') : (pick.away_team_name || 'AWAY')} (${pick.tentative_pick}) <span>${getDisplayOdds(pick.odds)}</span>
-            </div>
-        </div>
-    ` : `
-        <div class="action-area" style="text-align: center; border-radius: 8px; background: rgba(20,20,20,0.5); border: 1px solid rgba(255,255,255,0.05); padding: 10px; margin-top: 15px;">
-            <div style="font-size: 0.9rem; color: #666666; font-weight: bold; letter-spacing: 2px;">🚫 NO PICK</div>
-        </div>
-    `);
+    const mlApproved = pick.status === 'APROBADO';
+    const atsApproved = pick.ats_status === 'APROBADO';
+    const hasAts = pick.ats_status && pick.ats_status !== 'SIN DATOS';
 
-    const probHtml = (isApproved || hasTentative) ? `
-        <div class="prob-container">
-            <div class="prob-label">
-                <span style="color:#ffffff">${aProb}%</span>
-                <span style="color:#ff3333">${hProb}%</span>
-            </div>
-            <div class="bar-bg">
-                <div class="bar-fill" style="width: ${aProb}%; background: #ffffff; box-shadow: 0 0 10px rgba(255,255,255,0.8);"></div>
-                <div class="bar-fill" style="width: ${hProb}%; background: #ff3333; box-shadow: 0 0 10px rgba(255,51,51,0.8);"></div>
-            </div>
+    // MoneyLine line
+    let mlLine = '';
+    if (mlApproved) {
+        const mlTeam = pick.tentative_pick === 'HOME' ? (pick.home_team_name || 'HOME') : (pick.away_team_name || 'AWAY');
+        mlLine = `<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; border-radius:6px; background:rgba(160,255,46,0.12); border:1px solid #a0ff2e; margin-bottom:6px;">
+            <span style="color:#a0ff2e; font-weight:800; font-size:0.75rem; letter-spacing:1px;">MONEYLINE</span>
+            <span style="color:#fff; font-weight:700; font-size:0.9rem;">${mlTeam} ${getDisplayOdds(pick.odds)}</span>
+        </div>`;
+    } else if (hasTentative) {
+        const mlTeam = pick.tentative_pick === 'HOME' ? (pick.home_team_name || 'HOME') : (pick.away_team_name || 'AWAY');
+        mlLine = `<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; border-radius:6px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); margin-bottom:6px;">
+            <span style="color:#888; font-weight:700; font-size:0.75rem; letter-spacing:1px;">MONEYLINE</span>
+            <span style="color:#aaa; font-weight:600; font-size:0.85rem;">${mlTeam} ${getDisplayOdds(pick.odds)}</span>
+        </div>`;
+    } else {
+        mlLine = `<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; border-radius:6px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); margin-bottom:6px;">
+            <span style="color:#555; font-weight:700; font-size:0.75rem; letter-spacing:1px;">MONEYLINE</span>
+            <span style="color:#555; font-size:0.8rem;">---</span>
+        </div>`;
+    }
+
+    // ATS line
+    let atsLine = '';
+    if (hasAts) {
+        if (atsApproved) {
+            const atsTeam = pick.ats_pick === 'HOME' ? (pick.home_team_name || 'HOME') : (pick.away_team_name || 'AWAY');
+            const atsPoint = pick.ats_pick === 'HOME' ? pick.ats_home_point : pick.ats_away_point;
+            const atsOdds = pick.ats_pick === 'HOME' ? pick.ats_home_odds : pick.ats_away_odds;
+            atsLine = `<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; border-radius:6px; background:rgba(160,255,46,0.12); border:1px solid #a0ff2e;">
+                <span style="color:#a0ff2e; font-weight:800; font-size:0.75rem; letter-spacing:1px;">ATS</span>
+                <span style="color:#fff; font-weight:700; font-size:0.9rem;">${atsTeam} ${atsPoint > 0 ? '+' : ''}${atsPoint} (${getDisplayOdds(atsOdds)})</span>
+            </div>`;
+        } else {
+            atsLine = `<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; border-radius:6px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05);">
+                <span style="color:#555; font-weight:700; font-size:0.75rem; letter-spacing:1px;">ATS</span>
+                <span style="color:#555; font-size:0.8rem;">---</span>
+            </div>`;
+        }
+    }
+
+    const actionHtml = `
+        <div style="margin-top:12px;">
+            ${mlLine}
+            ${atsLine}
         </div>
-    ` : '';
+    `;
 
     card.innerHTML = `
         <div class="match-header">
             <span>${new Date(pick.game_date + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'})}</span>
-            <span style="color: ${isApproved ? '#a0ff2e' : 'inherit'}">${isApproved ? '⚡ ACTION' : 'INFO'}</span>
+            <span style="color: ${isApproved ? '#a0ff2e' : 'inherit'}">${isApproved ? 'ACTION' : 'INFO'}</span>
         </div>
         <div class="matchup-row">
             <div class="team-block" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">

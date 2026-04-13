@@ -8,7 +8,8 @@ import xgboost as xgb
 
 # Importaciones de nuestros módulos
 from data.updater import DailyUpdater
-from models.montecarlo import simular_juego_mc_legal 
+from models.montecarlo import simular_juego_mc_legal
+from models.ats_engine import run_ats_engine
 
 load_dotenv()
 supabase: Client = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY'))
@@ -327,9 +328,33 @@ def run_sindicato():
                     "profit_loss": 0.00
                 })
         
+    # --- ATS ENGINE V12.1 ---
+    try:
+        ats_by_pk, ats_ledger = run_ats_engine(supabase, extraer_tabla, hoy_dt, bankroll=5000.0)
+        # Merge ATS data into each game in reporte_diario
+        for partido in reporte_diario:
+            gpk = partido.get('game_pk')
+            if gpk in ats_by_pk:
+                partido.update(ats_by_pk[gpk])
+            else:
+                partido['ats_status'] = 'SIN DATOS'
+        # Add ATS ledger records to the main batch
+        ledger_records.extend(ats_ledger)
+    except Exception as e:
+        print(f"[ATS V12.1] Error en motor ATS: {e}. Continuando sin ATS.")
+
     os.makedirs('frontend/data', exist_ok=True)
+    # Sanitizar tipos numpy (float32, int64) para JSON
+    import numpy as np
+    def sanitize(obj):
+        if isinstance(obj, dict): return {k: sanitize(v) for k, v in obj.items()}
+        if isinstance(obj, list): return [sanitize(v) for v in obj]
+        if isinstance(obj, (np.integer,)): return int(obj)
+        if isinstance(obj, (np.floating,)): return float(obj)
+        if isinstance(obj, np.ndarray): return obj.tolist()
+        return obj
     with open('frontend/data/picks.json', 'w') as f:
-        json.dump(reporte_diario, f, indent=4)
+        json.dump(sanitize(reporte_diario), f, indent=4)
         
     try:
         supabase.table('daily_picks').upsert(reporte_diario).execute()

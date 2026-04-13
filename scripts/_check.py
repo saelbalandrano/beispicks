@@ -1,10 +1,6 @@
-import os
-from dotenv import load_dotenv
-from supabase import create_client
-load_dotenv()
-sb = create_client(os.getenv('SUPABASE_URL'), os.getenv('SUPABASE_KEY'))
-res = sb.table('sindicato_ledger').select('game_pk, game_date, pick_team, odds, stake, status, profit_loss').limit(3).execute()
-for r in res.data:
-    print(r)
-total = sb.table('sindicato_ledger').select('id', count='exact').execute()
-print(f"\nColumna 'stake' detectada. Total registros: {total.count}")
+import json
+d = json.load(open('frontend/data/picks.json'))
+print(f"Total picks hoy: {len(d)}")
+print(f"Fecha: {d[0]['game_date']}")
+for p in d[:5]:
+    print(f"  {p['away_team_name']} @ {p['home_team_name']} | Status: {p['status']} | Edge: {p.get('edge','N/A')}")
