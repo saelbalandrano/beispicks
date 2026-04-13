@@ -4,104 +4,147 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MLB Intelligence | Syndicate UI</title>
+    <meta name="description" content="MLB Predictive Intelligence - Algorithmic Sports Analytics">
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">MLB<span class="accent">INTELLIGENCE</span></div>
-        <div class="nav-links">
-            <span class="active" id="tab-today" style="cursor: pointer;">Today's Slate</span>
-            <span id="tab-history" style="cursor: pointer;">Historial</span>
+
+    <!-- ============================================ -->
+    <!--  LOGIN SCREEN                                -->
+    <!-- ============================================ -->
+    <div id="login-screen" style="display:flex; align-items:center; justify-content:center; min-height:100vh; padding:2rem;">
+        <div style="width:100%; max-width:400px; text-align:center;">
+            <div style="margin-bottom:2.5rem;">
+                <h1 style="font-family:'Outfit',sans-serif; font-weight:900; font-size:2.2rem; letter-spacing:-0.5px;">
+                    MLB<span style="color:#a0ff2e;">INTELLIGENCE</span>
+                </h1>
+                <p style="color:#666; font-size:0.9rem; margin-top:0.5rem;">Authenticated Access Only</p>
+            </div>
+
+            <form id="login-form" style="display:flex; flex-direction:column; gap:1rem;">
+                <input id="login-email" type="email" placeholder="Email" required
+                    style="padding:14px 18px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-family:'Inter',sans-serif; font-size:0.95rem; outline:none; transition:border 0.2s;"
+                    onfocus="this.style.borderColor='rgba(160,255,46,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'"
+                >
+                <input id="login-password" type="password" placeholder="Password" required
+                    style="padding:14px 18px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-family:'Inter',sans-serif; font-size:0.95rem; outline:none; transition:border 0.2s;"
+                    onfocus="this.style.borderColor='rgba(160,255,46,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'"
+                >
+                <button type="submit"
+                    style="padding:14px; background:linear-gradient(135deg, #a0ff2e, #6bdb00); color:#000; font-family:'Outfit',sans-serif; font-weight:800; font-size:1rem; border:none; border-radius:10px; cursor:pointer; letter-spacing:1px; text-transform:uppercase; transition:transform 0.2s, box-shadow 0.2s;"
+                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(160,255,46,0.3)'"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'"
+                >ACCESS</button>
+                <p id="login-error" style="color:#ff4757; font-size:0.85rem; min-height:1.2rem;"></p>
+            </form>
+
+            <p style="color:#444; font-size:0.75rem; margin-top:2rem;">Powered by Supabase Auth</p>
         </div>
-    </nav>
-    
-    <!-- TODAY'S SLATE VIEW -->
-    <main id="view-today">
-        <header class="slate-header">
-            <div class="title-cluster">
-                <span class="fire-badge">🔥 LIVE PICKS</span>
-                <h1>FEATURED MATCHUPS</h1>
+    </div>
+
+    <!-- ============================================ -->
+    <!--  MAIN APP (hidden until authenticated)       -->
+    <!-- ============================================ -->
+    <div id="app-container" style="display:none;">
+
+        <nav class="navbar">
+            <div class="logo">MLB<span class="accent">INTELLIGENCE</span></div>
+            <div class="nav-links">
+                <span class="active" id="tab-today" style="cursor: pointer;">Today's Slate</span>
+                <span id="tab-history" style="cursor: pointer;">Historial</span>
+                <span id="user-email" style="font-size:0.75rem; color:#555; max-width:150px; overflow:hidden; text-overflow:ellipsis;"></span>
+                <span id="btn-logout" style="cursor:pointer; color:#ff4757; font-size:0.8rem; font-weight:700;" onclick="signOut()">LOGOUT</span>
             </div>
-            <p>Consensus Algorithm & Monte Carlo Output</p>
-        </header>
+        </nav>
 
-        <section id="approved-picks-container" class="picks-grid">
-            <!-- Dynamic Aprobado Cards -->
-        </section>
+        <!-- TODAY'S SLATE VIEW -->
+        <main id="view-today">
+            <header class="slate-header">
+                <div class="title-cluster">
+                    <span class="fire-badge">LIVE PICKS</span>
+                    <h1>FEATURED MATCHUPS</h1>
+                </div>
+                <p>Consensus Algorithm & Monte Carlo Output</p>
+            </header>
 
-        <header class="slate-header secondary">
-            <h2>MARKET WATCH</h2>
-            <p>Informational Screenings - No Algorithmic Edge Found</p>
-        </header>
+            <section id="approved-picks-container" class="picks-grid">
+                <!-- Dynamic Aprobado Cards -->
+            </section>
 
-        <section id="ignored-picks-container" class="market-grid">
-            <!-- Dynamic Ignored Cards -->
-        </section>
-    </main>
+            <header class="slate-header secondary">
+                <h2>MARKET WATCH</h2>
+                <p>Informational Screenings - No Algorithmic Edge Found</p>
+            </header>
 
-    <!-- PICKS HISTORY VIEW -->
-    <main id="view-history" style="display: none;">
-        <header class="slate-header">
-            <div class="title-cluster">
-                <span class="fire-badge">BANKROLL</span>
-                <h1>PICKS HISTORY</h1>
-            </div>
-            <p>Immutable Historical Picks Tracking &amp; Dynamic Kelly Sizing</p>
-        </header>
+            <section id="ignored-picks-container" class="market-grid">
+                <!-- Dynamic Ignored Cards -->
+            </section>
+        </main>
 
-        <!-- TOTAL STATS ROW -->
-        <section class="bankroll-dash">
-            <div class="bankroll-card highlight">
-                <h3>Total Profit</h3>
-                <h2 id="ledger-profit">$0.00</h2>
-            </div>
-            <div class="bankroll-card">
-                <h3>Win/Loss/Push</h3>
-                <h2 id="ledger-wlp">0-0-0</h2>
-            </div>
-            <div class="bankroll-card">
-                <h3>Win Rate</h3>
-                <h2 id="ledger-winrate">0.0%</h2>
-            </div>
-        </section>
+        <!-- PICKS HISTORY VIEW -->
+        <main id="view-history" style="display: none;">
+            <header class="slate-header">
+                <div class="title-cluster">
+                    <span class="fire-badge">BANKROLL</span>
+                    <h1>PICKS HISTORY</h1>
+                </div>
+                <p>Immutable Historical Picks Tracking &amp; Dynamic Kelly Sizing</p>
+            </header>
 
-        <!-- PER-MARKET BREAKDOWN (auto-generated) -->
-        <section id="market-breakdown" class="bankroll-dash" style="flex-wrap:wrap;">
-            <!-- Populated dynamically by JS -->
-        </section>
+            <!-- TOTAL STATS ROW -->
+            <section class="bankroll-dash">
+                <div class="bankroll-card highlight">
+                    <h3>Total Profit</h3>
+                    <h2 id="ledger-profit">$0.00</h2>
+                </div>
+                <div class="bankroll-card">
+                    <h3>Win/Loss/Push</h3>
+                    <h2 id="ledger-wlp">0-0-0</h2>
+                </div>
+                <div class="bankroll-card">
+                    <h3>Win Rate</h3>
+                    <h2 id="ledger-winrate">0.0%</h2>
+                </div>
+            </section>
 
-        <section class="ledger-table-container">
-            <div class="ledger-controls" style="display:flex; gap:10px; justify-content:flex-end; align-items:center;">
-                <select id="ledger-market">
-                    <option value="ALL">All Markets</option>
-                    <!-- Populated dynamically -->
-                </select>
-                <select id="ledger-year">
-                    <option value="2026">2026 Season</option>
-                    <option value="2025">2025 Season</option>
-                </select>
-            </div>
-            <table class="ledger-table">
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Partido</th>
-                        <th>Pick</th>
-                        <th>Mercado</th>
-                        <th>Cuota</th>
-                        <th>Apuesta</th>
-                        <th>Status</th>
-                        <th>P/L ($)</th>
-                    </tr>
-                </thead>
-                <tbody id="ledger-tbody">
-                    <!-- Populated via JS -->
-                </tbody>
-            </table>
-        </section>
-    </main>
+            <!-- PER-MARKET BREAKDOWN (auto-generated) -->
+            <section id="market-breakdown" class="bankroll-dash" style="flex-wrap:wrap;">
+            </section>
 
+            <section class="ledger-table-container">
+                <div class="ledger-controls" style="display:flex; gap:10px; justify-content:flex-end; align-items:center;">
+                    <select id="ledger-market">
+                        <option value="ALL">All Markets</option>
+                    </select>
+                    <select id="ledger-year">
+                        <option value="2026">2026 Season</option>
+                        <option value="2025">2025 Season</option>
+                    </select>
+                </div>
+                <table class="ledger-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Partido</th>
+                            <th>Pick</th>
+                            <th>Mercado</th>
+                            <th>Cuota</th>
+                            <th>Apuesta</th>
+                            <th>Status</th>
+                            <th>P/L ($)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ledger-tbody">
+                    </tbody>
+                </table>
+            </section>
+        </main>
+
+    </div><!-- /app-container -->
+
+    <script src="auth.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

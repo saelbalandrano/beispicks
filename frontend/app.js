@@ -175,9 +175,14 @@ function createCard(pick, isApproved) {
     return card;
 }
 
-// Iniciar aplicación
-document.addEventListener('DOMContentLoaded', () => {
-    loadPicks();
+// Iniciar aplicación con auth gate
+document.addEventListener('DOMContentLoaded', async () => {
+    setupAuthForm();
+    setupAuthListener();
+    const authed = await checkAuth();
+    if (authed) {
+        loadPicks();
+    }
     setupTabs();
 });
 
