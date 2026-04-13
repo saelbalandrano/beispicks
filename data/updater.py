@@ -264,7 +264,7 @@ class DailyUpdater:
         # 4. Inyección en Supabase
         if registros_limpios:
             try:
-                self.client.table('historical_odds').insert(registros_limpios).execute()
+                self.client.table('historical_odds').upsert(registros_limpios, on_conflict='game_pk,market_key,outcome_name').execute()
                 print(f" -> EXITO: {len(registros_limpios)} registros de momios consenso inyectados correctamente.")
             except Exception as e:
                 print(f" -> Error al insertar momios: {e}")
