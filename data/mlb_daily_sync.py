@@ -1,3 +1,4 @@
+import sys
 import statsapi
 import pandas as pd
 from supabase import create_client, Client
@@ -43,7 +44,7 @@ juegos_validos = [g['game_id'] for g in schedule if g['game_type'] == 'R' and g[
 
 if not juegos_validos:
     print(" ⚠️ No se encontraron juegos de temporada regular finalizados para ayer. Abortando sincronización.")
-    exit()
+    sys.exit(0)  # Exit 0 = éxito, para que GitHub Actions no bloquee el pipeline
 
 print(f" -> Encontrados {len(juegos_validos)} juegos. Extrayendo Boxscores, Clima, Umpires y PBP...")
 
@@ -243,28 +244,34 @@ if not df_rel.empty:
         supabase.table('bullpen_availability').upsert(bullpen_lote).execute()
 
 # Viajes (Requiere buscar los últimos 10 días para ver cuándo jugaron por última vez)
-limite_rest = (ayer - timedelta(days=10)).strftime('%Y-%m-%d')
-res_g = supabase.table('mlb_games_history').select('*').gte('game_date', limite_rest).execute()
-df_g = pd.DataFrame(res_g.data).sort_values('game_date')
-travel_lote = []
-if not df_g.empty:
-    for tid in pd.concat([df_g['home_team_id'], df_g['away_team_id']]).unique():
-        t_games = df_g[(df_g['home_team_id'] == tid) | (df_g['away_team_id'] == tid)].copy()
-        t_games['prev_date'] = t_games['game_date'].shift(1)
-        
-        # Solo procesamos el juego de ayer
-        game_ayer = t_games[t_games['game_date'] == fecha_sql]
-        if not game_ayer.empty:
-            row = game_ayer.iloc[0]
-            rest = 3 if pd.isna(row['prev_date']) else (pd.to_datetime(row['game_date']) - pd.to_datetime(row['prev_date'])).days
-            travel_lote.append({
-                "game_pk": int(row['game_pk']),
-                "team_id": int(tid),
-                "game_date": str(row['game_date']),
-                "is_home_team": bool(row['home_team_id'] == tid),
-                "rest_days": int(rest)
-            })
-    if travel_lote:
-        supabase.table('team_travel_logs').upsert(travel_lote).execute()
+try:
+    limite_rest = (ayer - timedelta(days=10)).strftime('%Y-%m-%d')
+    res_g = supabase.table('mlb_games_history').select('*').gte('game_date', limite_rest).execute()
+    df_g = pd.DataFrame(res_g.data) if res_g.data else pd.DataFrame()
+    travel_lote = []
+    if not df_g.empty and 'game_date' in df_g.columns:
+        df_g = df_g.sort_values('game_date')
+        for tid in pd.concat([df_g['home_team_id'], df_g['away_team_id']]).unique():
+            t_games = df_g[(df_g['home_team_id'] == tid) | (df_g['away_team_id'] == tid)].copy()
+            t_games['prev_date'] = t_games['game_date'].shift(1)
+            
+            # Solo procesamos el juego de ayer
+            game_ayer = t_games[t_games['game_date'] == fecha_sql]
+            if not game_ayer.empty:
+                row = game_ayer.iloc[0]
+                rest = 3 if pd.isna(row['prev_date']) else (pd.to_datetime(row['game_date']) - pd.to_datetime(row['prev_date'])).days
+                travel_lote.append({
+                    "game_pk": int(row['game_pk']),
+                    "team_id": int(tid),
+                    "game_date": str(row['game_date']),
+                    "is_home_team": bool(row['home_team_id'] == tid),
+                    "rest_days": int(rest)
+                })
+        if travel_lote:
+            supabase.table('team_travel_logs').upsert(travel_lote).execute()
+    else:
+        print(" ⚠️ No se encontraron juegos recientes para calcular viajes. Saltando.")
+except Exception as e:
+    print(f" ⚠️ Error calculando viajes: {e}. Continuando sin bloquear.")
 
 print("\n 🏁 ACTUALIZACIÓN DIARIA COMPLETADA. SINDICATO AL 100%.")

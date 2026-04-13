@@ -29,6 +29,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: "Paso 1: Sincronización Diaria (Resultados de Ayer)"
+        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
@@ -47,7 +48,7 @@ jobs:
   # ═══════════════════════════════════════════════════════
   predictions:
     runs-on: ubuntu-latest
-    needs: data-sync  # No arranca hasta que el Job 1 termine exitosamente
+    needs: data-sync
     steps:
       - name: Checkout del Repositorio
         uses: actions/checkout@v4
