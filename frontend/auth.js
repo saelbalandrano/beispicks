@@ -5,7 +5,7 @@
 //  IMPORTANTE: Este archivo NO contiene la service_role key.
 // ============================================================
 const SUPABASE_URL = 'https://qoiuwnjhtztkrjpdvlsc.supabase.co';
-const SUPABASE_ANON_KEY = 'REPLACE_WITH_YOUR_ANON_KEY'; // Get from Supabase Dashboard > Settings > API > anon public
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvaXV3bmpodHp0a3JqcGR2bHNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2OTA1MDIsImV4cCI6MjA5MTI2NjUwMn0.HECB1CRA1tE-64Q1kC9s_pFgIW5Mek_74xds0JUShr4';
 
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
