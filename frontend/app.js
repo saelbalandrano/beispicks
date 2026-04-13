@@ -117,7 +117,7 @@ function createCard(pick, isApproved) {
 
     card.innerHTML = `
         <div class="match-header">
-            <span>GAME ID: ${pick.game_pk}</span>
+            <span>${new Date(pick.game_date + 'T12:00:00').toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'})}</span>
             <span style="color: ${isApproved ? '#a0ff2e' : 'inherit'}">${isApproved ? '⚡ ACTION' : 'INFO'}</span>
         </div>
         <div class="matchup-row">
