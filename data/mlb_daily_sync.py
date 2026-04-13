@@ -241,7 +241,10 @@ if not df_rel.empty:
             "is_burned": bool(row['pitches_thrown'] > 30)
         })
     if bullpen_lote:
-        supabase.table('bullpen_availability').upsert(bullpen_lote).execute()
+        try:
+            supabase.table('bullpen_availability').upsert(bullpen_lote, on_conflict='game_date,pitcher_id').execute()
+        except Exception as e:
+            print(f"     [WARN] Bullpen upsert: {e}")
 
 # Viajes (Requiere buscar los últimos 10 días para ver cuándo jugaron por última vez)
 try:
@@ -268,7 +271,7 @@ try:
                     "rest_days": int(rest)
                 })
         if travel_lote:
-            supabase.table('team_travel_logs').upsert(travel_lote).execute()
+            supabase.table('team_travel_logs').upsert(travel_lote, on_conflict='game_pk,team_id').execute()
     else:
         print(" [SKIP] No se encontraron juegos recientes para calcular viajes. Saltando.")
 except Exception as e:
