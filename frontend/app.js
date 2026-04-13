@@ -199,11 +199,29 @@ async function loadLedger(year) {
             if (row.status === 'PUSH') statusClass = 'status-push';
 
             const tr = document.createElement('tr');
+            
+            // Resolver nombre del matchup y pick
+            const homeName = row.home_team_name || '?';
+            const awayName = row.away_team_name || '?';
+            const matchup = `${awayName} @ ${homeName}`;
+            const pickName = row.pick_team === 'HOME' ? homeName : awayName;
+            
+            // Traducir market_type a nombres legibles
+            const marketLabels = {
+                'h2h': 'Moneyline',
+                'spreads': 'Spread',
+                'totals': 'Over/Under',
+                'h2h_1st_5_innings': 'F5 Moneyline',
+                'spreads_1st_5_innings': 'F5 Spread',
+                'totals_1st_5_innings': 'F5 Over/Under'
+            };
+            const marketLabel = marketLabels[row.market_type] || row.market_type;
+            
             tr.innerHTML = `
                 <td>${row.game_date}</td>
-                <td>${row.game_pk}</td>
-                <td style="font-weight:bold; color:#fff;">${row.pick_team === 'HOME' ? 'Home' : 'Away'}</td>
-                <td><span style="background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px;">${row.market_type.toUpperCase()}</span></td>
+                <td style="font-size:0.85rem;">${matchup}</td>
+                <td style="font-weight:bold; color:#fff;">${pickName}</td>
+                <td><span style="background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px;">${marketLabel}</span></td>
                 <td>${row.odds > 0 ? '+' : ''}${row.odds}</td>
                 <td class="${statusClass}">${row.status}</td>
                 <td style="color:${parseFloat(row.profit_loss) > 0 ? '#a0ff2e' : (parseFloat(row.profit_loss) < 0 ? '#ff4757' : '#fff')}; font-weight:bold;">

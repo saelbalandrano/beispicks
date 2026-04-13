@@ -319,6 +319,16 @@ def run_sindicato():
         # Al extraer todo, construimos y publicamos el tracker JSON para el frontend
         res_ledger_all = supabase.table('sindicato_ledger').select('*').execute()
         if res_ledger_all.data:
+            # Enriquecer con nombres de equipos cruzando contra mlb_games_history
+            ledger_pks = list(set(r['game_pk'] for r in res_ledger_all.data))
+            res_games_ledger = supabase.table('mlb_games_history').select('game_pk, home_team_name, away_team_name').in_('game_pk', ledger_pks).execute()
+            games_map = {g['game_pk']: g for g in res_games_ledger.data} if res_games_ledger.data else {}
+            
+            for record in res_ledger_all.data:
+                g = games_map.get(record['game_pk'], {})
+                record['home_team_name'] = g.get('home_team_name', '')
+                record['away_team_name'] = g.get('away_team_name', '')
+            
             with open('frontend/data/ledger.json', 'w') as f:
                 json.dump(res_ledger_all.data, f, indent=4)
             print(" -> [LEDGER] frontend/data/ledger.json exportado correctamente con historial íntegro.")
