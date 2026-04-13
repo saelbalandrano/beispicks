@@ -1,0 +1,8 @@
+pandas
+numpy
+xgboost
+supabase
+python-dotenv
+MLB-StatsAPI
+requests
+scikit-learn

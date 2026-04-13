@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLB Intelligence | Syndicate UI</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">MLB<span class="accent">INTELLIGENCE</span></div>
+        <div class="nav-links">
+            <span class="active" id="tab-today" style="cursor: pointer;">Today's Slate</span>
+            <span id="tab-history" style="cursor: pointer;">Pick Ledger</span>
+        </div>
+    </nav>
+    
+    <!-- TODAY'S SLATE VIEW -->
+    <main id="view-today">
+        <header class="slate-header">
+            <div class="title-cluster">
+                <span class="fire-badge">🔥 LIVE PICKS</span>
+                <h1>FEATURED MATCHUPS</h1>
+            </div>
+            <p>Consensus Algorithm & Monte Carlo Output</p>
+        </header>
+
+        <section id="approved-picks-container" class="picks-grid">
+            <!-- Dynamic Aprobado Cards -->
+        </section>
+
+        <header class="slate-header secondary">
+            <h2>MARKET WATCH</h2>
+            <p>Informational Screenings - No Algorithmic Edge Found</p>
+        </header>
+
+        <section id="ignored-picks-container" class="market-grid">
+            <!-- Dynamic Ignored Cards -->
+        </section>
+    </main>
+
+    <!-- LEDGER HISTORY VIEW -->
+    <main id="view-history" style="display: none;">
+        <header class="slate-header">
+            <div class="title-cluster">
+                <span class="fire-badge">🏦 BANKROLL</span>
+                <h1>SINDICATO LEDGER</h1>
+            </div>
+            <p>Immutable Historical Picks Tracking & Profit Calculation ($100 Flat)</p>
+        </header>
+
+        <section class="bankroll-dash">
+            <div class="bankroll-card highlight">
+                <h3>Total Profit</h3>
+                <h2 id="ledger-profit">$0.00</h2>
+            </div>
+            <div class="bankroll-card">
+                <h3>Win/Loss/Push</h3>
+                <h2 id="ledger-wlp">0-0-0</h2>
+            </div>
+            <div class="bankroll-card">
+                <h3>Win Rate</h3>
+                <h2 id="ledger-winrate">0.0%</h2>
+            </div>
+        </section>
+
+        <section class="ledger-table-container">
+            <div class="ledger-controls">
+                <select id="ledger-year">
+                    <option value="2026">2026 Season</option>
+                    <option value="2025">2025 Season</option>
+                </select>
+            </div>
+            <table class="ledger-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Game PK</th>
+                        <th>Pick</th>
+                        <th>Market</th>
+                        <th>Odds</th>
+                        <th>Status</th>
+                        <th>P/L ($)</th>
+                    </tr>
+                </thead>
+                <tbody id="ledger-tbody">
+                    <!-- Populated via JS -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
