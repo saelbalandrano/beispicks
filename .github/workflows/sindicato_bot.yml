@@ -3,15 +3,15 @@ name: Sindicato MLB - Orquestador Diario
 on:
   schedule:
     # 12:00 UTC = 7:00 AM CDT (Hora del Centro / CDMX en verano)
-    # Los juegos de MLB no empiezan antes de las 11:00 AM CT.
-    # A esta hora garantizamos momios 100% pre-match (Vegas Original).
     - cron: '0 12 * * *'
-  workflow_dispatch: # Permite correrlo manualmente desde la página de GitHub con un botón
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   # ═══════════════════════════════════════════════════════
   #  JOB 1: CARGA DE DATOS (7:00 AM CT)
-  #  Sincroniza resultados de ayer + Captura momios de hoy
   # ═══════════════════════════════════════════════════════
   data-sync:
     runs-on: ubuntu-latest
@@ -28,7 +28,7 @@ jobs:
       - name: Instalar Dependencias
         run: pip install -r requirements.txt
 
-      - name: "Paso 1: Sincronización Diaria (Resultados de Ayer)"
+      - name: "Paso 1: Sincronizacion Diaria (Resultados de Ayer)"
         continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -44,7 +44,6 @@ jobs:
 
   # ═══════════════════════════════════════════════════════
   #  JOB 2: PREDICCIONES (~7:10 AM CT)
-  #  Espera a que data-sync termine, luego lanza el cerebro
   # ═══════════════════════════════════════════════════════
   predictions:
     runs-on: ubuntu-latest
@@ -64,7 +63,7 @@ jobs:
 
       - name: "Pausa de seguridad (Supabase digest)"
         run: |
-          echo "Esperando 2 minutos para que Supabase procese los índices..."
+          echo "Esperando 2 minutos para que Supabase procese los indices..."
           sleep 120
 
       - name: "Paso 3: Ejecutar Cerebro Quant (XGBoost + Monte Carlo + Kelly + Ledger)"
