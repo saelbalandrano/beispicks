@@ -11,6 +11,8 @@ env:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 jobs:
   # ═══════════════════════════════════════════════════════
@@ -46,11 +48,14 @@ jobs:
         run: python -c "from data.updater import DailyUpdater; DailyUpdater().run_daily_update()"
 
   # ═══════════════════════════════════════════════════════
-  #  JOB 2: PREDICCIONES (~7:10 AM CT)
+  #  JOB 2: PREDICCIONES + DEPLOY (~7:10 AM CT)
   # ═══════════════════════════════════════════════════════
   predictions:
     runs-on: ubuntu-latest
     needs: data-sync
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout del Repositorio
         uses: actions/checkout@v4
@@ -76,7 +81,7 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: python main.py
 
-      - name: "Paso 4: Publicar datos al frontend (auto-commit)"
+      - name: "Paso 4: Guardar datos en el repo"
         run: |
           git config user.name "Sindicato Bot"
           git config user.email "bot@beispicks.ai"
@@ -84,3 +89,14 @@ jobs:
           git diff --staged --quiet || git commit -m "data: Picks y ledger actualizados $(date -u +%Y-%m-%d)"
           git push
 
+      - name: "Paso 5: Publicar en GitHub Pages"
+        uses: actions/configure-pages@v5
+
+      - name: "Upload Pages artifact"
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './frontend'
+
+      - name: "Deploy to GitHub Pages"
+        id: deployment
+        uses: actions/deploy-pages@v4
