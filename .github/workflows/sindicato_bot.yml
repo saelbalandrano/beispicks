@@ -9,6 +9,9 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+permissions:
+  contents: write
+
 jobs:
   # ═══════════════════════════════════════════════════════
   #  JOB 1: CARGA DE DATOS (7:00 AM CT)
@@ -72,3 +75,12 @@ jobs:
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: python main.py
+
+      - name: "Paso 4: Publicar datos al frontend (auto-commit)"
+        run: |
+          git config user.name "Sindicato Bot"
+          git config user.email "bot@beispicks.ai"
+          git add -f frontend/data/picks.json frontend/data/ledger.json
+          git diff --staged --quiet || git commit -m "data: Picks y ledger actualizados $(date -u +%Y-%m-%d)"
+          git push
+
