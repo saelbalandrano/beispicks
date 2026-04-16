@@ -462,20 +462,6 @@
         "away_team_name": "Kansas City Royals"
     },
     {
-        "id": "de1d1c2a-9200-455a-beb8-32bc827f019f",
-        "game_pk": 823314,
-        "game_date": "2026-04-15",
-        "pick_team": "HOME",
-        "market_type": "h2h",
-        "odds": -110,
-        "status": "PENDING",
-        "profit_loss": 0,
-        "created_at": "2026-04-15T13:19:41.406679+00:00",
-        "stake": 164.71,
-        "home_team_name": "San Diego Padres",
-        "away_team_name": "Seattle Mariners"
-    },
-    {
         "id": "e0855c59-0753-4b5b-91f6-f603723cb8b0",
         "game_pk": 823477,
         "game_date": "2026-04-15",
@@ -544,5 +530,75 @@
         "stake": 161.380004882812,
         "home_team_name": "Athletics",
         "away_team_name": "Texas Rangers"
+    },
+    {
+        "id": "de1d1c2a-9200-455a-beb8-32bc827f019f",
+        "game_pk": 823314,
+        "game_date": "2026-04-15",
+        "pick_team": "HOME",
+        "market_type": "h2h",
+        "odds": -110,
+        "status": "WON",
+        "profit_loss": 149.74,
+        "created_at": "2026-04-15T13:19:41.406679+00:00",
+        "stake": 164.71,
+        "home_team_name": "San Diego Padres",
+        "away_team_name": "Seattle Mariners"
+    },
+    {
+        "id": "928e2e63-f690-4940-8055-d971ad551d08",
+        "game_pk": 823396,
+        "game_date": "2026-04-16",
+        "pick_team": "HOME",
+        "market_type": "h2h",
+        "odds": -155,
+        "status": "PENDING",
+        "profit_loss": 0,
+        "created_at": "2026-04-16T13:26:47.030588+00:00",
+        "stake": 144.43,
+        "home_team_name": "Pittsburgh Pirates",
+        "away_team_name": "Washington Nationals"
+    },
+    {
+        "id": "eba56325-d29a-4e56-85d9-fc4d3600ffc3",
+        "game_pk": 823801,
+        "game_date": "2026-04-16",
+        "pick_team": "HOME",
+        "market_type": "spreads",
+        "odds": 160,
+        "status": "PENDING",
+        "profit_loss": 0,
+        "created_at": "2026-04-16T13:26:47.030588+00:00",
+        "stake": 250,
+        "home_team_name": "Milwaukee Brewers",
+        "away_team_name": "Toronto Blue Jays"
+    },
+    {
+        "id": "3e0e3d8a-d301-4f75-bba4-846993678657",
+        "game_pk": 823313,
+        "game_date": "2026-04-16",
+        "pick_team": "AWAY",
+        "market_type": "spreads",
+        "odds": 140,
+        "status": "PENDING",
+        "profit_loss": 0,
+        "created_at": "2026-04-16T13:26:47.030588+00:00",
+        "stake": 250,
+        "home_team_name": "San Diego Padres",
+        "away_team_name": "Seattle Mariners"
+    },
+    {
+        "id": "f86bf1ac-157b-46dd-b1b6-af33cd0eea53",
+        "game_pk": 824289,
+        "game_date": "2026-04-16",
+        "pick_team": "AWAY",
+        "market_type": "spreads",
+        "odds": 140,
+        "status": "PENDING",
+        "profit_loss": 0,
+        "created_at": "2026-04-16T13:26:47.030588+00:00",
+        "stake": 247.410003662109,
+        "home_team_name": "Detroit Tigers",
+        "away_team_name": "Kansas City Royals"
     }
 ]
