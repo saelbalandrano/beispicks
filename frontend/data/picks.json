@@ -11,9 +11,9 @@
         "status": "IGNORAR",
         "pick": null,
         "tentative_pick": "HOME",
-        "edge": -0.34,
+        "edge": 0.22,
         "odds": -140,
-        "confianza": 57.99,
+        "confianza": 58.56,
         "motivo": "Trampa de Abril (< 4.0%)",
         "model_stats": {
             "home_k_pct": 0.26,
@@ -36,9 +36,9 @@
         "status": "IGNORAR",
         "pick": null,
         "tentative_pick": "HOME",
-        "edge": -4.55,
-        "odds": -135,
-        "confianza": 52.89,
+        "edge": -3.66,
+        "odds": -132,
+        "confianza": 53.23,
         "motivo": "Trampa de Abril (< 4.0%)",
         "model_stats": {
             "home_k_pct": 0.21,
@@ -86,9 +86,9 @@
         "status": "APROBADO",
         "pick": "HOME",
         "tentative_pick": "HOME",
-        "edge": 7.79,
-        "odds": 127,
-        "confianza": 51.85,
+        "edge": 7.64,
+        "odds": 126,
+        "confianza": 51.88,
         "motivo": "Consenso de 5 Capas",
         "model_stats": {
             "home_k_pct": 0.19,
@@ -98,7 +98,7 @@
             "home_exit_velo": 75.79666666666667,
             "away_exit_velo": 79.36333333333333
         },
-        "kelly_stake": 174.12
+        "kelly_stake": 171.2
     },
     {
         "game_pk": 823397,
@@ -112,9 +112,9 @@
         "status": "APROBADO",
         "pick": "HOME",
         "tentative_pick": "HOME",
-        "edge": 4.91,
+        "edge": 4.53,
         "odds": -122,
-        "confianza": 59.86,
+        "confianza": 59.49,
         "motivo": "Consenso de 5 Capas",
         "model_stats": {
             "home_k_pct": 0.25,
@@ -124,7 +124,7 @@
             "home_exit_velo": 78.345,
             "away_exit_velo": 68.99181818181819
         },
-        "kelly_stake": 136.14
+        "kelly_stake": 125.8
     },
     {
         "game_pk": 823559,
@@ -188,9 +188,9 @@
         "status": "IGNORAR",
         "pick": null,
         "tentative_pick": "AWAY",
-        "edge": -1.46,
+        "edge": -1.06,
         "odds": 105,
-        "confianza": 47.32,
+        "confianza": 47.73,
         "motivo": "Trampa de Abril (< 4.0%)",
         "model_stats": {
             "home_k_pct": 0.2,
@@ -237,11 +237,11 @@
         "away_prob": 44.119998931884766,
         "status": "IGNORAR",
         "pick": null,
-        "tentative_pick": "HOME",
-        "edge": -10.42,
-        "odds": -173,
-        "confianza": 52.95,
-        "motivo": "Trampa de Abril (< 4.0%)",
+        "tentative_pick": null,
+        "edge": 0.0,
+        "odds": 0,
+        "confianza": 0.0,
+        "motivo": "Sin Consenso XGB/MC",
         "model_stats": {
             "home_k_pct": 0.25,
             "away_k_pct": 0.18,
@@ -313,9 +313,9 @@
         "status": "IGNORAR",
         "pick": null,
         "tentative_pick": "HOME",
-        "edge": -2.62,
+        "edge": -2.51,
         "odds": -130,
-        "confianza": 53.9,
+        "confianza": 54.01,
         "motivo": "Trampa de Abril (< 4.0%)",
         "model_stats": {
             "home_k_pct": 0.27,
@@ -337,11 +337,11 @@
         "away_prob": 48.400001525878906,
         "status": "IGNORAR",
         "pick": null,
-        "tentative_pick": null,
-        "edge": 0.0,
-        "odds": 0,
-        "confianza": 0.0,
-        "motivo": "Sin Consenso XGB/MC",
+        "tentative_pick": "HOME",
+        "edge": 1.15,
+        "odds": 100,
+        "confianza": 51.15,
+        "motivo": "Trampa de Abril (< 4.0%)",
         "model_stats": {
             "home_k_pct": 0.26,
             "away_k_pct": 0.24,
@@ -363,9 +363,9 @@
         "status": "APROBADO",
         "pick": "HOME",
         "tentative_pick": "HOME",
-        "edge": 15.06,
+        "edge": 14.85,
         "odds": 125,
-        "confianza": 59.5,
+        "confianza": 59.29,
         "motivo": "Consenso de 5 Capas",
         "model_stats": {
             "home_k_pct": 0.28,

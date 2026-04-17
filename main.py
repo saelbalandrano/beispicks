@@ -342,10 +342,19 @@ def run_sindicato():
         json.dump(sanitize(reporte_diario), f, indent=4)
         
     try:
-        supabase.table('daily_picks').upsert(reporte_diario).execute()
+        # Sanitizar para Supabase: solo enviar columnas que existen en la tabla
+        columns_allowed = {
+            'game_pk', 'game_date', 'home_id', 'away_id', 'home_prob', 'away_prob', 
+            'status', 'pick', 'edge', 'odds', 'confianza', 'motivo', 'model_stats'
+        }
+        reporte_nube = []
+        for p in reporte_diario:
+            reporte_nube.append({k: v for k, v in p.items() if k in columns_allowed})
+
+        supabase.table('daily_picks').upsert(reporte_nube).execute()
         print("\n -> [NUBE] Predicciones sincronizadas en la tabla 'daily_picks' de Supabase.")
     except Exception as e:
-        print(f"\n -> [WARNING] No se pudo guardar en Supabase. ¿Ya creaste la tabla 'daily_picks'?: {e}")
+        print(f"\n -> [WARNING] No se pudo guardar en Supabase: {e}")
         
     try:
         if ledger_records:
