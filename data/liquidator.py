@@ -79,8 +79,35 @@ class SindicatoLiquidator:
                             bet['status'] = 'LOST'
                             bet['profit_loss'] = -stake
                             
-                elif bet['market_type'] == 'spreads' or bet['market_type'] == 'totals':
-                    # Lógica de spreads/runlines se expandirá aquí cuando el modelo los apoye
+                elif bet['market_type'] == 'spreads':
+                    # MLB Runline = 1.5 siempre.
+                    # Odds positivos (+140) = equipo lleva -1.5 (underdog en spread)
+                    # Odds negativos (-125) = equipo lleva +1.5 (favorito en spread)
+                    if bet['odds'] >= 0:
+                        spread = -1.5  # El pick tiene -1.5 (debe ganar por 2+)
+                    else:
+                        spread = 1.5   # El pick tiene +1.5 (puede perder por 1 y ganar)
+
+                    picked_home = (bet['pick_team'] == 'HOME')
+                    if picked_home:
+                        adjusted_score = home_score + spread
+                        opponent_score = away_score
+                    else:
+                        adjusted_score = away_score + spread
+                        opponent_score = home_score
+
+                    if adjusted_score > opponent_score:
+                        bet['status'] = 'WON'
+                        bet['profit_loss'] = self.calcular_payout(bet['odds'], stake)
+                    elif adjusted_score < opponent_score:
+                        bet['status'] = 'LOST'
+                        bet['profit_loss'] = -stake
+                    else:
+                        bet['status'] = 'PUSH'
+                        bet['profit_loss'] = 0.00
+
+                elif bet['market_type'] == 'totals':
+                    # Totals se expandira cuando el modelo los apoye
                     pass
                 
                 if bet['status'] != 'PENDING':

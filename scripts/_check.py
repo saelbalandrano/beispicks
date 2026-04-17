@@ -2,10 +2,7 @@ import json
 d = json.load(open('frontend/data/picks.json'))
 print(f"Total: {len(d)} picks")
 for p in d:
-    ats = p.get('ats_status', 'N/A')
-    ats_pick = p.get('ats_pick', '-')
-    ats_point = p.get('ats_home_point', '')
-    print(f"  {p['away_team_name']} @ {p['home_team_name']} | ML:{p['status']} | ATS:{ats} | ATS_pick:{ats_pick} {ats_point}")
+    print(f"  {p['away_team_name']} @ {p['home_team_name']} | ML:{p['status']} | Edge: {p.get('edge', 0)}%")
 
 print("\n--- LEDGER ---")
 ld = json.load(open('frontend/data/ledger.json'))

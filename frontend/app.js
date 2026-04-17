@@ -43,8 +43,8 @@ function renderDashboard(picks) {
     approvedGrid.innerHTML = '';
     ignoredGrid.innerHTML = '';
 
-    const approvedPicks = picks.filter(p => p.status === 'APROBADO' || p.ats_status === 'APROBADO');
-    const ignoredPicks = picks.filter(p => p.status !== 'APROBADO' && p.ats_status !== 'APROBADO');
+    const approvedPicks = picks.filter(p => p.status === 'APROBADO');
+    const ignoredPicks = picks.filter(p => p.status !== 'APROBADO');
 
     if(approvedPicks.length === 0) {
         approvedGrid.innerHTML = `
@@ -55,8 +55,7 @@ function renderDashboard(picks) {
             </div>`;
     } else {
         approvedPicks.forEach(p => {
-            const isAnyApproved = (p.status === 'APROBADO' || p.ats_status === 'APROBADO');
-            approvedGrid.appendChild(createCard(p, isAnyApproved));
+            approvedGrid.appendChild(createCard(p, true));
         });
     }
 
@@ -87,8 +86,6 @@ function createCard(pick, isApproved) {
     const hasTentative = pick.tentative_pick && pick.tentative_pick !== null;
 
     const mlApproved = pick.status === 'APROBADO';
-    const atsApproved = pick.ats_status === 'APROBADO';
-    const hasAts = pick.ats_status && pick.ats_status !== 'SIN DATOS';
 
     // MoneyLine line
     let mlLine = '';
@@ -111,29 +108,9 @@ function createCard(pick, isApproved) {
         </div>`;
     }
 
-    // ATS line
-    let atsLine = '';
-    if (hasAts) {
-        if (atsApproved) {
-            const atsTeam = pick.ats_pick === 'HOME' ? (pick.home_team_name || 'HOME') : (pick.away_team_name || 'AWAY');
-            const atsPoint = pick.ats_pick === 'HOME' ? pick.ats_home_point : pick.ats_away_point;
-            const atsOdds = pick.ats_pick === 'HOME' ? pick.ats_home_odds : pick.ats_away_odds;
-            atsLine = `<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; border-radius:6px; background:rgba(160,255,46,0.12); border:1px solid #a0ff2e;">
-                <span style="color:#a0ff2e; font-weight:800; font-size:0.75rem; letter-spacing:1px;">ATS</span>
-                <span style="color:#fff; font-weight:700; font-size:0.9rem;">${atsTeam} ${atsPoint > 0 ? '+' : ''}${atsPoint} (${getDisplayOdds(atsOdds)})</span>
-            </div>`;
-        } else {
-            atsLine = `<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; border-radius:6px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05);">
-                <span style="color:#555; font-weight:700; font-size:0.75rem; letter-spacing:1px;">ATS</span>
-                <span style="color:#555; font-size:0.8rem;">---</span>
-            </div>`;
-        }
-    }
-
     const actionHtml = `
         <div style="margin-top:12px;">
             ${mlLine}
-            ${atsLine}
         </div>
     `;
 
@@ -249,7 +226,10 @@ async function loadLedger(year, marketFilter) {
         const tbody = document.getElementById('ledger-tbody');
         tbody.innerHTML = '';
 
-        const yearData = data.filter(d => d.game_date.startsWith(year));
+        const allYearData = data.filter(d => d.game_date.startsWith(year));
+        // Ocultar picks de Runlines (spreads)
+        const yearData = allYearData.filter(d => d.market_type !== 'spreads');
+        
         yearData.sort((a, b) => new Date(b.game_date) - new Date(a.game_date));
 
         // --- Auto-detect markets and populate filter ---
