@@ -720,11 +720,25 @@
         "pick_team": "HOME",
         "market_type": "h2h",
         "odds": -163,
-        "status": "PENDING",
-        "profit_loss": 0,
+        "status": "WON",
+        "profit_loss": 117.93,
         "created_at": "2026-04-18T12:56:19.878064+00:00",
         "stake": 192.22,
         "home_team_name": "Athletics",
         "away_team_name": "Chicago White Sox"
+    },
+    {
+        "id": "137dbb44-93fc-4024-a25c-db6224777cc3",
+        "game_pk": 823393,
+        "game_date": "2026-04-19",
+        "pick_team": "HOME",
+        "market_type": "h2h",
+        "odds": -114,
+        "status": "PENDING",
+        "profit_loss": 0,
+        "created_at": "2026-04-19T12:53:16.47914+00:00",
+        "stake": 145.1,
+        "home_team_name": "Pittsburgh Pirates",
+        "away_team_name": "Tampa Bay Rays"
     }
 ]
