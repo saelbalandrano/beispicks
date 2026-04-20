@@ -734,11 +734,25 @@
         "pick_team": "HOME",
         "market_type": "h2h",
         "odds": -114,
-        "status": "PENDING",
-        "profit_loss": 0,
+        "status": "WON",
+        "profit_loss": 127.28,
         "created_at": "2026-04-19T12:53:16.47914+00:00",
         "stake": 145.1,
         "home_team_name": "Pittsburgh Pirates",
         "away_team_name": "Tampa Bay Rays"
+    },
+    {
+        "id": "8c2d54b4-71eb-4546-92fd-33f8e96f7408",
+        "game_pk": 824450,
+        "game_date": "2026-04-20",
+        "pick_team": "HOME",
+        "market_type": "h2h",
+        "odds": -115,
+        "status": "PENDING",
+        "profit_loss": 0,
+        "created_at": "2026-04-20T13:23:41.302813+00:00",
+        "stake": 107.62,
+        "home_team_name": "Cleveland Guardians",
+        "away_team_name": "Houston Astros"
     }
 ]
