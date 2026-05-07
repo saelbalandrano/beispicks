@@ -768,5 +768,19 @@
         "stake": 135.47,
         "home_team_name": "St. Louis Cardinals",
         "away_team_name": "Los Angeles Dodgers"
+    },
+    {
+        "id": "61d08043-2fdd-493f-a5dd-7da767d520de",
+        "game_pk": 823306,
+        "game_date": "2026-05-07",
+        "pick_team": "AWAY",
+        "market_type": "h2h",
+        "odds": 145,
+        "status": "PENDING",
+        "profit_loss": 0,
+        "created_at": "2026-05-07T13:56:58.097142+00:00",
+        "stake": 185.85,
+        "home_team_name": "San Diego Padres",
+        "away_team_name": "St. Louis Cardinals"
     }
 ]
