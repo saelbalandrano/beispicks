@@ -824,5 +824,19 @@
         "stake": 154.88,
         "home_team_name": "Washington Nationals",
         "away_team_name": "Baltimore Orioles"
+    },
+    {
+        "id": "7de76dd6-bbeb-4b90-b541-5233875cd3e6",
+        "game_pk": 822738,
+        "game_date": "2026-05-17",
+        "pick_team": "HOME",
+        "market_type": "h2h",
+        "odds": 110,
+        "status": "PENDING",
+        "profit_loss": 0,
+        "created_at": "2026-05-17T13:11:46.144398+00:00",
+        "stake": 150.37,
+        "home_team_name": "Washington Nationals",
+        "away_team_name": "Baltimore Orioles"
     }
 ]
