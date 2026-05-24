@@ -866,5 +866,19 @@
         "stake": 137.45,
         "home_team_name": "Washington Nationals",
         "away_team_name": "New York Mets"
+    },
+    {
+        "id": "5fe0133d-3990-49a0-901c-399a9798d416",
+        "game_pk": 824921,
+        "game_date": "2026-05-24",
+        "pick_team": "HOME",
+        "market_type": "h2h",
+        "odds": -165,
+        "status": "PENDING",
+        "profit_loss": 0,
+        "created_at": "2026-05-24T13:16:28.806496+00:00",
+        "stake": 171.06,
+        "home_team_name": "Atlanta Braves",
+        "away_team_name": "Washington Nationals"
     }
 ]
