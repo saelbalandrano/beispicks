@@ -874,11 +874,25 @@
         "pick_team": "HOME",
         "market_type": "h2h",
         "odds": -165,
-        "status": "PENDING",
-        "profit_loss": 0,
+        "status": "LOST",
+        "profit_loss": -171.06,
         "created_at": "2026-05-24T13:16:28.806496+00:00",
         "stake": 171.06,
         "home_team_name": "Atlanta Braves",
         "away_team_name": "Washington Nationals"
+    },
+    {
+        "id": "8a8820ea-4fa1-4729-9419-e1a32420b6e3",
+        "game_pk": 823380,
+        "game_date": "2026-05-25",
+        "pick_team": "HOME",
+        "market_type": "h2h",
+        "odds": 106,
+        "status": "PENDING",
+        "profit_loss": 0,
+        "created_at": "2026-05-25T14:47:55.77345+00:00",
+        "stake": 155.9,
+        "home_team_name": "Pittsburgh Pirates",
+        "away_team_name": "Chicago Cubs"
     }
 ]
