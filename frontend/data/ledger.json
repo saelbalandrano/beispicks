@@ -894,5 +894,19 @@
         "stake": 155.9,
         "home_team_name": "Pittsburgh Pirates",
         "away_team_name": "Chicago Cubs"
+    },
+    {
+        "id": "1144e62c-b528-4353-a51f-44ab524100a4",
+        "game_pk": 824515,
+        "game_date": "2026-05-29",
+        "pick_team": "HOME",
+        "market_type": "h2h",
+        "odds": 118,
+        "status": "PENDING",
+        "profit_loss": 0,
+        "created_at": "2026-05-29T14:54:44.880764+00:00",
+        "stake": 245.82,
+        "home_team_name": "Cincinnati Reds",
+        "away_team_name": "Atlanta Braves"
     }
 ]
