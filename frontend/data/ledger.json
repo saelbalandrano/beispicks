@@ -986,11 +986,25 @@
         "pick_team": "HOME",
         "market_type": "h2h",
         "odds": -130,
-        "status": "PENDING",
-        "profit_loss": 0,
+        "status": "WON",
+        "profit_loss": 49,
         "created_at": "2026-06-01T17:30:32.182379+00:00",
         "stake": 63.7,
         "home_team_name": "Seattle Mariners",
         "away_team_name": "New York Mets"
+    },
+    {
+        "id": "724e3240-f39c-4391-916e-53716e930618",
+        "game_pk": 823460,
+        "game_date": "2026-06-02",
+        "pick_team": "AWAY",
+        "market_type": "h2h",
+        "odds": 125,
+        "status": "PENDING",
+        "profit_loss": 0,
+        "created_at": "2026-06-02T16:17:00.943815+00:00",
+        "stake": 51.05,
+        "home_team_name": "Philadelphia Phillies",
+        "away_team_name": "San Diego Padres"
     }
 ]
