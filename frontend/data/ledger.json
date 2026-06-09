@@ -1062,5 +1062,19 @@
         "stake": 10,
         "home_team_name": "Arizona Diamondbacks",
         "away_team_name": "Washington Nationals"
+    },
+    {
+        "id": "d05be666-e628-471c-a461-2ef834742afe",
+        "game_pk": 823374,
+        "game_date": "2026-06-09",
+        "pick_team": "HOME",
+        "market_type": "h2h",
+        "odds": -111,
+        "status": "PENDING",
+        "profit_loss": 0,
+        "created_at": "2026-06-09T14:41:12.338567+00:00",
+        "stake": 25.45,
+        "home_team_name": "Pittsburgh Pirates",
+        "away_team_name": "Los Angeles Dodgers"
     }
 ]
