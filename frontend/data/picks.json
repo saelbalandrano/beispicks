@@ -1,13 +1,13 @@
 [
     {
-        "game_pk": 824766,
-        "game_date": "2026-07-17",
-        "home_id": 111,
-        "away_id": 139,
-        "home_team_name": "Boston Red Sox",
-        "away_team_name": "Tampa Bay Rays",
-        "home_prob": 52.0099983215332,
-        "away_prob": 47.9900016784668,
+        "game_pk": 824514,
+        "game_date": "2026-08-17",
+        "home_id": 113,
+        "away_id": 138,
+        "home_team_name": "Cincinnati Reds",
+        "away_team_name": "St. Louis Cardinals",
+        "home_prob": 53.09000015258789,
+        "away_prob": 46.90999984741211,
         "status": "IGNORAR",
         "pick": null,
         "tentative_pick": null,
@@ -16,12 +16,12 @@
         "confianza": 0.0,
         "motivo": "Sin Consenso XGB/MC",
         "model_stats": {
-            "home_k_pct": 0.2,
-            "away_k_pct": 0.16,
+            "home_k_pct": 0.23,
+            "away_k_pct": 0.0,
             "home_bp": 0,
             "away_bp": 0,
-            "home_exit_velo": 64.72888888888889,
-            "away_exit_velo": 68.99181818181819
+            "home_exit_velo": 77.19888888888889,
+            "away_exit_velo": 75.84555555555556
         }
     }
 ]
